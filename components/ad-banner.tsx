@@ -17,8 +17,7 @@ export default function AdBanner({ className, slot = "default", format = "auto" 
 
   return (
     <div className={cn("ad-container text-center my-4", className)}>
-      {/* This is a placeholder for Google AdSense */}
-      {/* Replace with actual AdSense code when your account is approved */}
+      <p className="text-xs text-muted-foreground mb-1">Advertisement</p>
       <div
         className="bg-muted/30 border border-dashed border-muted-foreground/20 rounded-md p-4 flex items-center justify-center"
         style={{
@@ -32,6 +31,8 @@ export default function AdBanner({ className, slot = "default", format = "auto" 
                   : "100px",
           width: "100%",
         }}
+        aria-label="Advertisement"
+        role="complementary"
       >
         <p className="text-sm text-muted-foreground">Advertisement - Your AdSense Ad Will Appear Here</p>
 

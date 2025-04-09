@@ -54,6 +54,34 @@ export default function TermsOfServicePage() {
           services, or other information.
         </p>
 
+        <h2>Advertisements and Third-Party Content</h2>
+        <p>
+          This website displays advertisements served by Google AdSense and other third-party advertising networks.
+          These advertisements may collect and use information about your visits to this and other websites to provide
+          advertisements about goods and services of interest to you.
+        </p>
+        <p>
+          If you would like more information about this practice and to know your choices about not having this
+          information used by these companies, please visit{" "}
+          <a
+            href="https://www.google.com/policies/technologies/ads/"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-primary hover:underline"
+          >
+            Google's Advertising Policies
+          </a>
+          .
+        </p>
+        <p>
+          We do not control the content of these advertisements and are not responsible for the claims made in them. We
+          do not endorse the products or services offered in these advertisements.
+        </p>
+        <p>
+          We reserve the right to remove or disable advertisements that we consider inappropriate or that violate our
+          policies.
+        </p>
+
         <h2>Disclaimer of Warranties</h2>
         <p>
           We provide our services "as is," and without any warranty or condition, express, implied, or statutory. We

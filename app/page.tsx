@@ -173,23 +173,46 @@ export default function Home() {
 
       <AdBanner className="my-8" />
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mt-8">
-        {tools.map((tool) => (
-          <Link href={tool.href} key={tool.title} className="block">
-            <Card className="h-full transition-all hover:shadow-md">
-              <CardHeader>
-                <div className="flex items-center justify-center mb-2 text-primary">{tool.icon}</div>
-                <CardTitle className="text-center">{tool.title}</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <CardDescription className="text-center">{tool.description}</CardDescription>
-              </CardContent>
-            </Card>
-          </Link>
-        ))}
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-center mb-6">Popular Tools</h2>
+        <AdBanner className="my-8" />
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {tools.slice(0, 8).map((tool) => (
+            <Link href={tool.href} key={tool.title} className="block">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardHeader>
+                  <div className="flex items-center justify-center mb-2 text-primary">{tool.icon}</div>
+                  <CardTitle className="text-center">{tool.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-center">{tool.description}</CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
       </div>
 
-      <AdBanner className="my-8" />
+      <div className="mt-12">
+        <h2 className="text-2xl font-bold text-center mb-6">More Developer Tools</h2>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          {tools.slice(8).map((tool) => (
+            <Link href={tool.href} key={tool.title} className="block">
+              <Card className="h-full transition-all hover:shadow-md">
+                <CardHeader>
+                  <div className="flex items-center justify-center mb-2 text-primary">{tool.icon}</div>
+                  <CardTitle className="text-center">{tool.title}</CardTitle>
+                </CardHeader>
+                <CardContent>
+                  <CardDescription className="text-center">{tool.description}</CardDescription>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
+        </div>
+      </div>
+
+      <AdBanner className="my-12" />
 
       <div className="mt-8 text-center">
         <h2 className="text-2xl font-bold">Features</h2>
@@ -238,6 +261,39 @@ export default function Home() {
             <p>
               We continuously improve our tools and add new features based on user feedback and the latest development
               trends.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section className="my-12 py-8 border-t border-b">
+        <h2 className="text-2xl font-bold text-center mb-8">How Our Developer Tools Help You</h2>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
+          <div className="flex flex-col items-center text-center">
+            <div className="rounded-full bg-primary/10 p-4 mb-4">
+              <Clock className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Save Time</h3>
+            <p className="text-muted-foreground">
+              Our tools automate repetitive tasks, allowing you to focus on what matters most - building great software.
+            </p>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <div className="rounded-full bg-primary/10 p-4 mb-4">
+              <Code className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Improve Code Quality</h3>
+            <p className="text-muted-foreground">
+              Format, validate, and optimize your code with our professional-grade utilities designed for developers.
+            </p>
+          </div>
+          <div className="flex flex-col items-center text-center">
+            <div className="rounded-full bg-primary/10 p-4 mb-4">
+              <Palette className="h-8 w-8 text-primary" />
+            </div>
+            <h3 className="text-xl font-semibold mb-2">Enhance Design</h3>
+            <p className="text-muted-foreground">
+              Create beautiful, consistent designs with our color tools, typography generators, and CSS utilities.
             </p>
           </div>
         </div>

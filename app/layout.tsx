@@ -91,6 +91,24 @@ export default function RootLayout({
             `,
           }}
         />
+        <Script
+          id="structured-data"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "WebSite",
+              name: "DevTools - Online Developer Utilities",
+              url: "https://devtools-online.vercel.app",
+              description: "Free online developer tools for formatting, beautifying, and validating code.",
+              potentialAction: {
+                "@type": "SearchAction",
+                target: "https://devtools-online.vercel.app/search?q={search_term_string}",
+                "query-input": "required name=search_term_string",
+              },
+            }),
+          }}
+        />
       </head>
       <body className={inter.className}>
         <ThemeProvider attribute="class" defaultTheme="system" enableSystem disableTransitionOnChange>
