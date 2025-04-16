@@ -35,6 +35,7 @@ export default function Base64ToImageClientPage() {
     }
   }, [base64Input, imageFormat])
 
+  // Fix the convertBase64ToImage function to handle more edge cases
   const convertBase64ToImage = () => {
     setIsProcessing(true)
     setError(null)
@@ -59,8 +60,8 @@ export default function Base64ToImageClientPage() {
         }
       }
 
-      // Validate base64 string
-      if (!/^[A-Za-z0-9+/=]+$/.test(cleanBase64)) {
+      // Validate base64 string - allow for some flexibility
+      if (!/^[A-Za-z0-9+/=]+$/.test(cleanBase64.replace(/\s/g, ""))) {
         throw new Error("Input contains invalid base64 characters")
       }
 

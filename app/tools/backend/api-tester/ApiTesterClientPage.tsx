@@ -6,28 +6,22 @@ import { Input } from "@/components/ui/input"
 import { useToast } from "@/hooks/use-toast"
 import AdBanner from "@/components/ad-banner"
 import FAQSection from "@/components/faq-section"
-import { Card, CardContent } from "@/components/ui/card"
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
-import { Copy, Send, Plus, Trash2, Clock, Download } from "lucide-react"
+import { Copy, Send, Plus, Trash2, Download, Code, FileJson } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
+import { Badge } from "@/components/ui/badge"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS"
+type BodyFormat = "raw" | "json" | "form-data" | "x-www-form-urlencoded"
 
 interface RequestHeader {
   id: string
   key: string
   value: string
   enabled: boolean
-}
-
-interface ApiRequest {
-  method: HttpMethod
-  url: string
-  headers: RequestHeader[]
-  body: string
-  params: RequestHeader[]
 }
 
 interface ApiResponse {
@@ -39,126 +33,207 @@ interface ApiResponse {
   size: number
 }
 
-interface RequestHistory {
-  id: string
-  name: string
-  request: ApiRequest
-  timestamp: number
-}
-
 export default function ApiTesterClientPage() {
-  const [request, setRequest] = useState<ApiRequest>({
-    method: "GET",
-    url: "https://jsonplaceholder.typicode.com/posts/1",
-    headers: [{ id: "1", key: "Content-Type", value: "application/json", enabled: true }],
-    body: "",
-    params: [{ id: "1", key: "", value: "", enabled: true }],
-  })
+  const [method, setMethod] = useState<HttpMethod>("GET")
+  const [url, setUrl] = useState("https://jsonplaceholder.typicode.com/posts/1")
+  const [headers, setHeaders] = useState<RequestHeader[]>([
+    { id: "1", key: "Content-Type", value: "application/json", enabled: true },
+  ])
+  const [params, setParams] = useState<RequestHeader[]>([{ id: "1", key: "", value: "", enabled: true }])
+  const [body, setBody] = useState("")
+  const [bodyFormat, setBodyFormat] = useState<BodyFormat>("json")
 
   const [response, setResponse] = useState<ApiResponse | null>(null)
-  const [isLoading, setIsLoading] = useState<boolean>(false)
+  const [isLoading, setIsLoading] = useState(false)
   const [activeTab, setActiveTab] = useState<"params" | "headers" | "body">("params")
   const [responseTab, setResponseTab] = useState<"body" | "headers">("body")
-  const [history, setHistory] = useState<RequestHistory[]>([])
-  const [showHistory, setShowHistory] = useState<boolean>(false)
-  const [requestName, setRequestName] = useState<string>("")
+
   const abortControllerRef = useRef<AbortController | null>(null)
   const { toast } = useToast()
 
-  const handleMethodChange = (method: HttpMethod) => {
-    setRequest((prev) => ({ ...prev, method }))
-  }
-
-  const handleUrlChange = (url: string) => {
-    setRequest((prev) => ({ ...prev, url }))
-  }
-
-  const handleBodyChange = (body: string) => {
-    setRequest((prev) => ({ ...prev, body }))
-  }
-
+  // Header management
   const addHeader = () => {
-    const newHeader: RequestHeader = {
-      id: Date.now().toString(),
-      key: "",
-      value: "",
-      enabled: true,
-    }
-
-    setRequest((prev) => ({
-      ...prev,
-      headers: [...prev.headers, newHeader],
-    }))
+    setHeaders([...headers, { id: Date.now().toString(), key: "", value: "", enabled: true }])
   }
 
   const updateHeader = (id: string, field: keyof RequestHeader, value: string | boolean) => {
-    setRequest((prev) => ({
-      ...prev,
-      headers: prev.headers.map((header) => (header.id === id ? { ...header, [field]: value } : header)),
-    }))
+    setHeaders(headers.map((header) => (header.id === id ? { ...header, [field]: value } : header)))
   }
 
   const removeHeader = (id: string) => {
-    setRequest((prev) => ({
-      ...prev,
-      headers: prev.headers.filter((header) => header.id !== id),
-    }))
+    setHeaders(headers.filter((header) => header.id !== id))
   }
 
+  // Parameter management
   const addParam = () => {
-    const newParam: RequestHeader = {
-      id: Date.now().toString(),
-      key: "",
-      value: "",
-      enabled: true,
-    }
-
-    setRequest((prev) => ({
-      ...prev,
-      params: [...prev.params, newParam],
-    }))
+    setParams([...params, { id: Date.now().toString(), key: "", value: "", enabled: true }])
   }
 
   const updateParam = (id: string, field: keyof RequestHeader, value: string | boolean) => {
-    setRequest((prev) => ({
-      ...prev,
-      params: prev.params.map((param) => (param.id === id ? { ...param, [field]: value } : param)),
-    }))
+    setParams(params.map((param) => (param.id === id ? { ...param, [field]: value } : param)))
   }
 
   const removeParam = (id: string) => {
-    setRequest((prev) => ({
-      ...prev,
-      params: prev.params.filter((param) => param.id !== id),
-    }))
+    setParams(params.filter((param) => param.id !== id))
   }
 
-  const buildUrl = () => {
-    try {
-      const url = new URL(request.url)
+  // Handle body format change
+  const handleBodyFormatChange = (format: BodyFormat) => {
+    setBodyFormat(format)
 
-      // Clear existing query parameters
-      url.search = ""
+    // Update Content-Type header based on body format
+    const contentTypeHeaderIndex = headers.findIndex((h) => h.key.toLowerCase() === "content-type")
+    const updatedHeaders = [...headers]
 
-      // Add query parameters
-      request.params.forEach((param) => {
-        if (param.enabled && param.key.trim()) {
-          url.searchParams.append(param.key.trim(), param.value)
-        }
+    let contentTypeValue = "text/plain"
+    if (format === "json") contentTypeValue = "application/json"
+    else if (format === "form-data") contentTypeValue = "multipart/form-data"
+    else if (format === "x-www-form-urlencoded") contentTypeValue = "application/x-www-form-urlencoded"
+
+    if (contentTypeHeaderIndex >= 0) {
+      updatedHeaders[contentTypeHeaderIndex] = {
+        ...updatedHeaders[contentTypeHeaderIndex],
+        value: contentTypeValue,
+        enabled: true,
+      }
+    } else {
+      updatedHeaders.push({
+        id: Date.now().toString(),
+        key: "Content-Type",
+        value: contentTypeValue,
+        enabled: true,
       })
+    }
 
-      return url.toString()
+    setHeaders(updatedHeaders)
+  }
+
+  // JSON formatting
+  const formatJson = () => {
+    if (bodyFormat !== "json") return
+
+    try {
+      const parsedJson = JSON.parse(body || "{}")
+      setBody(JSON.stringify(parsedJson, null, 2))
+      toast({
+        title: "JSON formatted",
+        description: "Your JSON has been formatted successfully",
+      })
     } catch (error) {
-      // If URL is invalid, just return it as is
-      return request.url
+      toast({
+        title: "Invalid JSON",
+        description: "Please check your JSON syntax",
+        variant: "destructive",
+      })
     }
   }
 
+  // JSON templates
+  const loadJsonTemplate = (template: string) => {
+    switch (template) {
+      case "empty":
+        setBody("{\n  \n}")
+        break
+      case "post":
+        setBody(
+          JSON.stringify(
+            {
+              title: "Sample Title",
+              body: "Sample body content",
+              userId: 1,
+            },
+            null,
+            2,
+          ),
+        )
+        break
+      case "user":
+        setBody(
+          JSON.stringify(
+            {
+              name: "John Doe",
+              email: "john@example.com",
+              age: 30,
+              address: {
+                street: "123 Main St",
+                city: "Anytown",
+                zipCode: "12345",
+              },
+            },
+            null,
+            2,
+          ),
+        )
+        break
+      case "array":
+        setBody(
+          JSON.stringify(
+            [
+              { id: 1, name: "Item 1" },
+              { id: 2, name: "Item 2" },
+              { id: 3, name: "Item 3" },
+            ],
+            null,
+            2,
+          ),
+        )
+        break
+    }
+
+    setBodyFormat("json")
+    handleBodyFormatChange("json")
+  }
+
+  // Validate JSON
+  const validateJsonBody = () => {
+    if (bodyFormat !== "json" || !body.trim()) return true
+
+    try {
+      JSON.parse(body)
+      return true
+    } catch (error) {
+      return false
+    }
+  }
+
+  // Build URL with query parameters
+  const buildUrl = () => {
+    try {
+      const urlObj = new URL(url)
+
+      // Clear existing query parameters
+      urlObj.search = ""
+
+      // Add query parameters
+      params.forEach((param) => {
+        if (param.enabled && param.key.trim()) {
+          urlObj.searchParams.append(param.key.trim(), param.value)
+        }
+      })
+
+      return urlObj.toString()
+    } catch (error) {
+      // If URL is invalid, just return it as is
+      return url
+    }
+  }
+
+  // Send request
   const sendRequest = async () => {
-    if (!request.url.trim()) {
+    if (!url.trim()) {
       toast({
         title: "Invalid URL",
         description: "Please enter a valid URL",
+        variant: "destructive",
+      })
+      return
+    }
+
+    // Validate JSON if that's the selected mode
+    if (bodyFormat === "json" && body.trim() && !validateJsonBody()) {
+      toast({
+        title: "Invalid JSON",
+        description: "Please check your JSON syntax before sending",
         variant: "destructive",
       })
       return
@@ -174,11 +249,11 @@ export default function ApiTesterClientPage() {
     const startTime = performance.now()
 
     try {
-      const url = buildUrl()
+      const requestUrl = buildUrl()
 
       const options: RequestInit = {
-        method: request.method,
-        headers: request.headers
+        method,
+        headers: headers
           .filter((header) => header.enabled && header.key.trim())
           .reduce(
             (acc, header) => {
@@ -191,21 +266,21 @@ export default function ApiTesterClientPage() {
       }
 
       // Add body for methods that support it
-      if (["POST", "PUT", "PATCH"].includes(request.method) && request.body.trim()) {
-        options.body = request.body
+      if (["POST", "PUT", "PATCH"].includes(method) && body.trim()) {
+        options.body = body
       }
 
-      const response = await fetch(url, options)
+      const response = await fetch(requestUrl, options)
       const endTime = performance.now()
       const responseTime = endTime - startTime
 
       // Get response headers
-      const headers: Record<string, string> = {}
+      const responseHeaders: Record<string, string> = {}
       response.headers.forEach((value, key) => {
-        headers[key] = value
+        responseHeaders[key] = value
       })
 
-      // Try to parse response as JSON first
+      // Try to parse response
       let responseBody = ""
       let responseSize = 0
 
@@ -235,21 +310,11 @@ export default function ApiTesterClientPage() {
       setResponse({
         status: response.status,
         statusText: response.statusText,
-        headers,
+        headers: responseHeaders,
         body: responseBody,
         time: responseTime,
         size: responseSize,
       })
-
-      // Add to history
-      const historyItem: RequestHistory = {
-        id: Date.now().toString(),
-        name: requestName || `${request.method} ${new URL(url).pathname}`,
-        request: { ...request },
-        timestamp: Date.now(),
-      }
-
-      setHistory((prev) => [historyItem, ...prev])
     } catch (error) {
       if ((error as Error).name === "AbortError") {
         toast({
@@ -269,6 +334,7 @@ export default function ApiTesterClientPage() {
     }
   }
 
+  // Cancel request
   const cancelRequest = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
@@ -277,20 +343,7 @@ export default function ApiTesterClientPage() {
     }
   }
 
-  const loadFromHistory = (historyItem: RequestHistory) => {
-    setRequest(historyItem.request)
-    setRequestName(historyItem.name)
-    setShowHistory(false)
-  }
-
-  const clearHistory = () => {
-    setHistory([])
-    toast({
-      title: "History cleared",
-      description: "Request history has been cleared",
-    })
-  }
-
+  // Copy response
   const copyResponse = () => {
     if (!response) return
 
@@ -304,10 +357,12 @@ export default function ApiTesterClientPage() {
     })
   }
 
+  // Download response
   const downloadResponse = () => {
     if (!response) return
 
     const textToDownload = responseTab === "body" ? response.body : JSON.stringify(response.headers, null, 2)
+
     const blob = new Blob([textToDownload], { type: "text/plain" })
     const url = URL.createObjectURL(blob)
     const link = document.createElement("a")
@@ -323,6 +378,7 @@ export default function ApiTesterClientPage() {
     })
   }
 
+  // Format bytes
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes"
 
@@ -333,6 +389,7 @@ export default function ApiTesterClientPage() {
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
   }
 
+  // Get status color
   const getStatusColor = (status: number): string => {
     if (status >= 200 && status < 300) return "text-green-600 dark:text-green-400"
     if (status >= 300 && status < 400) return "text-blue-600 dark:text-blue-400"
@@ -360,7 +417,7 @@ export default function ApiTesterClientPage() {
     {
       question: "How do I add a request body?",
       answer:
-        "For methods that support a request body (POST, PUT, PATCH), switch to the 'Body' tab and enter your request body. For JSON data, make sure to set the 'Content-Type' header to 'application/json'.",
+        "For methods that support a request body (POST, PUT, PATCH), switch to the 'Body' tab and enter your request body. For JSON data, select 'JSON' as the body format and use the formatting tools to ensure valid JSON.",
     },
     {
       question: "Are there any limitations to this API tester?",
@@ -370,70 +427,64 @@ export default function ApiTesterClientPage() {
   ]
 
   return (
-    <div className="container mx-auto">
+    <div className="container mx-auto px-4">
       <div className="flex flex-col items-center justify-center py-6 text-center">
         <h1 className="text-3xl font-bold tracking-tight">API Tester</h1>
         <p className="mt-2 text-muted-foreground">Test and debug APIs with a simple interface</p>
       </div>
 
-      <AdBanner format="horizontal" slot="api-tester-top" />
+      <div className="text-center mb-6">
+        <AdBanner format="horizontal" slot="api-tester-top" />
+        <p className="text-xs text-muted-foreground mt-1">Advertisement</p>
+      </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
+        {/* Request Section */}
         <div>
           <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center justify-between mb-4">
-                <h2 className="text-xl font-semibold">Request</h2>
-                <div className="flex items-center space-x-2">
-                  <Input
-                    placeholder="Request name"
-                    value={requestName}
-                    onChange={(e) => setRequestName(e.target.value)}
-                    className="w-48"
-                  />
-                  <Button variant="outline" size="icon" onClick={() => setShowHistory(!showHistory)} title="History">
-                    <Clock className="h-4 w-4" />
-                  </Button>
+            <CardHeader>
+              <CardTitle>Request</CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="flex flex-wrap gap-2">
+                <div className="w-32">
+                  <Select value={method} onValueChange={(value) => setMethod(value as HttpMethod)}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Method" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="GET">GET</SelectItem>
+                      <SelectItem value="POST">POST</SelectItem>
+                      <SelectItem value="PUT">PUT</SelectItem>
+                      <SelectItem value="DELETE">DELETE</SelectItem>
+                      <SelectItem value="PATCH">PATCH</SelectItem>
+                      <SelectItem value="HEAD">HEAD</SelectItem>
+                      <SelectItem value="OPTIONS">OPTIONS</SelectItem>
+                    </SelectContent>
+                  </Select>
                 </div>
-              </div>
 
-              <div className="flex items-center space-x-2 mb-4">
-                <Select value={request.method} onValueChange={(value) => handleMethodChange(value as HttpMethod)}>
-                  <SelectTrigger className="w-28">
-                    <SelectValue placeholder="Method" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="GET">GET</SelectItem>
-                    <SelectItem value="POST">POST</SelectItem>
-                    <SelectItem value="PUT">PUT</SelectItem>
-                    <SelectItem value="DELETE">DELETE</SelectItem>
-                    <SelectItem value="PATCH">PATCH</SelectItem>
-                    <SelectItem value="HEAD">HEAD</SelectItem>
-                    <SelectItem value="OPTIONS">OPTIONS</SelectItem>
-                  </SelectContent>
-                </Select>
+                <div className="flex-1">
+                  <Input placeholder="Enter URL" value={url} onChange={(e) => setUrl(e.target.value)} />
+                </div>
 
-                <Input
-                  placeholder="Enter URL"
-                  value={request.url}
-                  onChange={(e) => handleUrlChange(e.target.value)}
-                  className="flex-1"
-                />
-
-                {isLoading ? (
-                  <Button variant="destructive" onClick={cancelRequest}>
-                    Cancel
-                  </Button>
-                ) : (
-                  <Button onClick={sendRequest}>
-                    <Send className="h-4 w-4 mr-2" />
-                    Send
-                  </Button>
-                )}
+                <div>
+                  {isLoading ? (
+                    <Button variant="destructive" onClick={cancelRequest}>
+                      Cancel
+                    </Button>
+                  ) : (
+                    <Button onClick={sendRequest}>
+                      <Send className="h-4 w-4 mr-2" />
+                      Send
+                    </Button>
+                  )}
+                </div>
               </div>
 
               <Tabs
                 defaultValue="params"
+                value={activeTab}
                 onValueChange={(value) => setActiveTab(value as "params" | "headers" | "body")}
               >
                 <TabsList className="grid w-full grid-cols-3">
@@ -442,7 +493,8 @@ export default function ApiTesterClientPage() {
                   <TabsTrigger value="body">Body</TabsTrigger>
                 </TabsList>
 
-                <TabsContent value="params" className="space-y-4 mt-4">
+                {/* Parameters Tab */}
+                <TabsContent value="params" className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-sm font-medium">Query Parameters</h3>
                     <Button variant="outline" size="sm" onClick={addParam}>
@@ -451,7 +503,7 @@ export default function ApiTesterClientPage() {
                     </Button>
                   </div>
 
-                  {request.params.map((param) => (
+                  {params.map((param) => (
                     <div key={param.id} className="flex items-center space-x-2">
                       <Switch
                         checked={param.enabled}
@@ -483,7 +535,8 @@ export default function ApiTesterClientPage() {
                   ))}
                 </TabsContent>
 
-                <TabsContent value="headers" className="space-y-4 mt-4">
+                {/* Headers Tab */}
+                <TabsContent value="headers" className="space-y-4">
                   <div className="flex justify-between items-center">
                     <h3 className="text-sm font-medium">Headers</h3>
                     <Button variant="outline" size="sm" onClick={addHeader}>
@@ -492,7 +545,7 @@ export default function ApiTesterClientPage() {
                     </Button>
                   </div>
 
-                  {request.headers.map((header) => (
+                  {headers.map((header) => (
                     <div key={header.id} className="flex items-center space-x-2">
                       <Switch
                         checked={header.enabled}
@@ -524,83 +577,107 @@ export default function ApiTesterClientPage() {
                   ))}
                 </TabsContent>
 
-                <TabsContent value="body" className="mt-4">
+                {/* Body Tab */}
+                <TabsContent value="body" className="space-y-4">
+                  <div className="flex justify-between items-center mb-4">
+                    <div className="flex items-center space-x-2">
+                      <Select value={bodyFormat} onValueChange={(value) => handleBodyFormatChange(value as BodyFormat)}>
+                        <SelectTrigger className="w-40">
+                          <SelectValue placeholder="Body Format" />
+                        </SelectTrigger>
+                        <SelectContent>
+                          <SelectItem value="raw">Raw</SelectItem>
+                          <SelectItem value="json">JSON</SelectItem>
+                          <SelectItem value="form-data">Form Data</SelectItem>
+                          <SelectItem value="x-www-form-urlencoded">x-www-form-urlencoded</SelectItem>
+                        </SelectContent>
+                      </Select>
+
+                      {bodyFormat === "json" && (
+                        <Button variant="outline" size="sm" onClick={formatJson}>
+                          <Code className="h-4 w-4 mr-2" />
+                          Format JSON
+                        </Button>
+                      )}
+                    </div>
+
+                    {bodyFormat === "json" && (
+                      <div className="flex space-x-2">
+                        <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("empty")}>
+                          Empty
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("post")}>
+                          Post
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("user")}>
+                          User
+                        </Button>
+                        <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("array")}>
+                          Array
+                        </Button>
+                      </div>
+                    )}
+                  </div>
+
+                  {bodyFormat === "json" && !validateJsonBody() && body.trim() && (
+                    <div className="text-red-500 text-sm mb-2 flex items-center">
+                      <Badge variant="destructive" className="mr-2">
+                        Invalid JSON
+                      </Badge>
+                      Please check your JSON syntax before sending.
+                    </div>
+                  )}
+
+                  {bodyFormat === "json" && (
+                    <div className="bg-muted/30 p-2 rounded-md mb-2 flex items-center text-sm">
+                      <FileJson className="h-4 w-4 mr-2 text-primary" />
+                      <span>
+                        Enter valid JSON in the text area below. Use the Format JSON button to validate and format your
+                        JSON.
+                      </span>
+                    </div>
+                  )}
+
                   <Textarea
                     placeholder={
-                      ["POST", "PUT", "PATCH"].includes(request.method)
-                        ? "Enter request body (JSON, XML, etc.)"
-                        : "This HTTP method typically doesn't include a request body"
+                      !["POST", "PUT", "PATCH"].includes(method)
+                        ? "This HTTP method typically doesn't include a request body"
+                        : bodyFormat === "json"
+                          ? "Enter JSON body"
+                          : "Enter request body"
                     }
-                    value={request.body}
-                    onChange={(e) => handleBodyChange(e.target.value)}
+                    value={body}
+                    onChange={(e) => setBody(e.target.value)}
                     className="min-h-[200px] font-mono text-sm"
-                    disabled={!["POST", "PUT", "PATCH"].includes(request.method)}
+                    disabled={!["POST", "PUT", "PATCH"].includes(method)}
                   />
                 </TabsContent>
               </Tabs>
             </CardContent>
           </Card>
-
-          {showHistory && (
-            <Card className="mt-6">
-              <CardContent className="p-6">
-                <div className="flex justify-between items-center mb-4">
-                  <h2 className="text-xl font-semibold">Request History</h2>
-                  <Button variant="outline" size="sm" onClick={clearHistory} disabled={history.length === 0}>
-                    Clear History
-                  </Button>
-                </div>
-
-                {history.length > 0 ? (
-                  <div className="space-y-2 max-h-[300px] overflow-y-auto">
-                    {history.map((item) => (
-                      <div
-                        key={item.id}
-                        className="flex items-center justify-between p-2 hover:bg-muted/50 rounded-md cursor-pointer"
-                        onClick={() => loadFromHistory(item)}
-                      >
-                        <div>
-                          <p className="font-medium">{item.name}</p>
-                          <p className="text-xs text-muted-foreground">
-                            {item.request.method} {new URL(item.request.url).pathname}
-                          </p>
-                        </div>
-                        <p className="text-xs text-muted-foreground">{new Date(item.timestamp).toLocaleTimeString()}</p>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-8 text-muted-foreground">
-                    <p>No request history yet</p>
-                    <p className="text-sm mt-1">Send requests to see them here</p>
-                  </div>
-                )}
-              </CardContent>
-            </Card>
-          )}
         </div>
 
+        {/* Response Section */}
         <div>
           <Card>
-            <CardContent className="p-6">
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-xl font-semibold">Response</h2>
-                <div className="flex items-center space-x-2">
-                  {response && (
-                    <>
-                      <Button variant="outline" size="sm" onClick={copyResponse}>
-                        <Copy className="h-4 w-4 mr-2" />
-                        Copy
-                      </Button>
-                      <Button variant="outline" size="sm" onClick={downloadResponse}>
-                        <Download className="h-4 w-4 mr-2" />
-                        Download
-                      </Button>
-                    </>
-                  )}
-                </div>
-              </div>
-
+            <CardHeader>
+              <CardTitle className="flex justify-between items-center">
+                <span>Response</span>
+                {response && (
+                  <div className="flex items-center space-x-2">
+                    <Button variant="outline" size="sm" onClick={copyResponse}>
+                      <Copy className="h-4 w-4 mr-2" />
+                      Copy
+                    </Button>
+                    <Button variant="outline" size="sm" onClick={downloadResponse}>
+                      <Download className="h-4 w-4 mr-2" />
+                      Download
+                    </Button>
+                  </div>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
               {isLoading ? (
                 <div className="flex items-center justify-center h-80 bg-muted/30 rounded-md">
                   <div className="text-center">
@@ -674,7 +751,10 @@ export default function ApiTesterClientPage() {
         </div>
       </div>
 
-      <AdBanner className="my-8" format="rectangle" slot="api-tester-middle" />
+      <div className="text-center my-8">
+        <AdBanner format="rectangle" slot="api-tester-middle" />
+        <p className="text-xs text-muted-foreground mt-1">Advertisement</p>
+      </div>
 
       <section className="my-8 py-6 border-t">
         <h2 className="text-2xl font-semibold mb-4">About API Tester</h2>
@@ -696,7 +776,6 @@ export default function ApiTesterClientPage() {
             <li>Include query parameters in your URLs</li>
             <li>Send request bodies for methods that support them</li>
             <li>View response status, headers, and body</li>
-            <li>Save request history for future reference</li>
             <li>Copy and download response data</li>
           </ul>
         </div>

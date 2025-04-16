@@ -12,8 +12,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2, Download, FileText, Printer } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { format } from "date-fns"
-import { jsPDF } from "jspdf"
-import "jspdf-autotable"
 
 interface InvoiceItem {
   id: string
@@ -170,8 +168,12 @@ export default function InvoiceGeneratorClientPage() {
     setInvoiceDetails((prev) => ({ ...prev, [field]: value }))
   }
 
-  const generatePDF = () => {
+  const generatePDF = async () => {
     try {
+      // Dynamically import jsPDF and jspdf-autotable to avoid SSR issues
+      const { jsPDF } = await import("jspdf")
+      const autoTable = (await import("jspdf-autotable")).default
+
       const doc = new jsPDF()
 
       // Add business details
@@ -210,12 +212,11 @@ export default function InvoiceGeneratorClientPage() {
       // Add items table
       const tableY = 120
 
-      // @ts-ignore - jspdf-autotable types
-      doc.autoTable({
+      autoTable(doc, {
         startY: tableY,
         head: [["Description", "Quantity", "Rate", "Amount"]],
         body: items.map((item) => [
-          item.description,
+          item.description || "Item description",
           item.quantity.toString(),
           formatCurrency(item.rate),
           formatCurrency(item.amount),
@@ -327,7 +328,7 @@ export default function InvoiceGeneratorClientPage() {
                 .map(
                   (item) => `
                 <tr>
-                  <td>${item.description}</td>
+                  <td>${item.description || "Item description"}</td>
                   <td>${item.quantity}</td>
                   <td>${formatCurrency(item.rate)}</td>
                   <td>${formatCurrency(item.amount)}</td>

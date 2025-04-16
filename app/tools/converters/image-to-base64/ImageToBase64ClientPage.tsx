@@ -94,6 +94,7 @@ export default function ImageToBase64ClientPage() {
     reader.readAsDataURL(file)
   }
 
+  // Fix the fetchImageFromUrl function to handle CORS issues better
   const fetchImageFromUrl = async () => {
     if (!imageUrl) {
       toast({
@@ -108,8 +109,15 @@ export default function ImageToBase64ClientPage() {
     setError(null)
 
     try {
-      // Create a proxy URL to avoid CORS issues
-      const proxyUrl = `https://cors-anywhere.herokuapp.com/${imageUrl}`
+      // Create a proxy URL to avoid CORS issues - note that this is for demonstration
+      // In a production environment, you would use your own proxy or server-side fetching
+      let proxyUrl = imageUrl
+
+      // Only use proxy for non-same-origin URLs
+      if (!imageUrl.startsWith(window.location.origin) && !imageUrl.startsWith("data:")) {
+        // This is a public CORS proxy for demonstration purposes
+        proxyUrl = `https://api.allorigins.win/raw?url=${encodeURIComponent(imageUrl)}`
+      }
 
       // Fetch the image
       const response = await fetch(proxyUrl)

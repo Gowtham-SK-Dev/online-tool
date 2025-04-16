@@ -45,7 +45,7 @@ export default function GstCalculatorClientPage() {
     const rate = Number.parseFloat(gstRate) / 100
 
     if (calculationType === "add") {
-      // Add GST to amount
+      // Add GST to amount (exclusive GST)
       const gstAmount = parsedAmount * rate
       const totalAmount = parsedAmount + gstAmount
 
@@ -57,7 +57,7 @@ export default function GstCalculatorClientPage() {
         totalAmount: totalAmount,
       })
     } else {
-      // Remove GST from amount (amount is inclusive of GST)
+      // Remove GST from amount (inclusive GST)
       const originalAmount = parsedAmount / (1 + rate)
       const gstAmount = parsedAmount - originalAmount
 

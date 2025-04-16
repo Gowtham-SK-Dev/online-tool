@@ -31,6 +31,10 @@ import {
   DollarSign,
   TrendingUp,
   PieChart,
+  Send,
+  FileType,
+  ContrastIcon as Transition,
+  ImageIcon,
 } from "lucide-react"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -175,6 +179,26 @@ export default function Sidebar({ className }: SidebarProps) {
                 Number to Words
               </Link>
             </Button>
+            <Button
+              asChild
+              variant={pathname?.startsWith("/tools/converters/image-to-base64") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+            >
+              <Link href="/tools/converters/image-to-base64">
+                <ImageIcon className="mr-2 h-4 w-4" />
+                Image to Base64
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant={pathname?.startsWith("/tools/converters/base64-to-image") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+            >
+              <Link href="/tools/converters/base64-to-image">
+                <FileType className="mr-2 h-4 w-4" />
+                Base64 to Image
+              </Link>
+            </Button>
           </div>
         </div>
         <div className="px-4 py-2">
@@ -240,6 +264,41 @@ export default function Sidebar({ className }: SidebarProps) {
                 Favicon Generator
               </Link>
             </Button>
+            <Button
+              asChild
+              variant={pathname?.startsWith("/tools/design/css-to-less") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+            >
+              <Link href="/tools/design/css-to-less">
+                <FileCode className="mr-2 h-4 w-4" />
+                CSS to LESS Converter
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant={pathname?.startsWith("/tools/design/transition") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+            >
+              <Link href="/tools/design/transition">
+                <Transition className="mr-2 h-4 w-4" />
+                Transition Tools
+              </Link>
+            </Button>
+          </div>
+        </div>
+        <div className="px-4 py-2">
+          <h2 className="mb-2 px-2 text-lg font-semibold tracking-tight">Backend Tools</h2>
+          <div className="space-y-1">
+            <Button
+              asChild
+              variant={pathname?.startsWith("/tools/backend/api-tester") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+            >
+              <Link href="/tools/backend/api-tester">
+                <Send className="mr-2 h-4 w-4" />
+                API Tester
+              </Link>
+            </Button>
           </div>
         </div>
         <div className="px-4 py-2">
@@ -247,20 +306,20 @@ export default function Sidebar({ className }: SidebarProps) {
           <div className="space-y-1">
             <Button
               asChild
-              variant={pathname?.startsWith("/tools/business/invoice") ? "secondary" : "ghost"}
+              variant={pathname?.startsWith("/tools/business/invoice-generator") ? "secondary" : "ghost"}
               className="w-full justify-start"
             >
-              <Link href="/tools/business/invoice">
+              <Link href="/tools/business/invoice-generator">
                 <FileCheck className="mr-2 h-4 w-4" />
                 Invoice Generator
               </Link>
             </Button>
             <Button
               asChild
-              variant={pathname?.startsWith("/tools/business/gst") ? "secondary" : "ghost"}
+              variant={pathname?.startsWith("/tools/business/gst-calculator") ? "secondary" : "ghost"}
               className="w-full justify-start"
             >
-              <Link href="/tools/business/gst">
+              <Link href="/tools/business/gst-calculator">
                 <Percent className="mr-2 h-4 w-4" />
                 GST Calculator
               </Link>
@@ -287,10 +346,10 @@ export default function Sidebar({ className }: SidebarProps) {
             </Button>
             <Button
               asChild
-              variant={pathname?.startsWith("/tools/business/budget") ? "secondary" : "ghost"}
+              variant={pathname?.startsWith("/tools/business/budget-planner") ? "secondary" : "ghost"}
               className="w-full justify-start"
             >
-              <Link href="/tools/business/budget">
+              <Link href="/tools/business/budget-planner">
                 <PieChart className="mr-2 h-4 w-4" />
                 Budget Planner
               </Link>
