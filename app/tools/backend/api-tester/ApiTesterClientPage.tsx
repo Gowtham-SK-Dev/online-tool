@@ -13,6 +13,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea"
 import { Switch } from "@/components/ui/switch"
 import { Badge } from "@/components/ui/badge"
+import { Label } from "@/components/ui/label"
 
 type HttpMethod = "GET" | "POST" | "PUT" | "DELETE" | "PATCH" | "HEAD" | "OPTIONS"
 type BodyFormat = "raw" | "json" | "form-data" | "x-www-form-urlencoded"
@@ -441,7 +442,7 @@ export default function ApiTesterClientPage() {
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mt-6">
         {/* Request Section */}
         <div>
-          <Card>
+          <Card className="h-full">
             <CardHeader>
               <CardTitle>Request</CardTitle>
             </CardHeader>
@@ -486,6 +487,7 @@ export default function ApiTesterClientPage() {
                 defaultValue="params"
                 value={activeTab}
                 onValueChange={(value) => setActiveTab(value as "params" | "headers" | "body")}
+                className="w-full"
               >
                 <TabsList className="grid w-full grid-cols-3">
                   <TabsTrigger value="params">Params</TabsTrigger>
@@ -494,7 +496,7 @@ export default function ApiTesterClientPage() {
                 </TabsList>
 
                 {/* Parameters Tab */}
-                <TabsContent value="params" className="space-y-4">
+                <TabsContent value="params" className="space-y-4 min-h-[300px]">
                   <div className="flex justify-between items-center">
                     <h3 className="text-sm font-medium">Query Parameters</h3>
                     <Button variant="outline" size="sm" onClick={addParam}>
@@ -536,7 +538,7 @@ export default function ApiTesterClientPage() {
                 </TabsContent>
 
                 {/* Headers Tab */}
-                <TabsContent value="headers" className="space-y-4">
+                <TabsContent value="headers" className="space-y-4 min-h-[300px]">
                   <div className="flex justify-between items-center">
                     <h3 className="text-sm font-medium">Headers</h3>
                     <Button variant="outline" size="sm" onClick={addHeader}>
@@ -578,20 +580,26 @@ export default function ApiTesterClientPage() {
                 </TabsContent>
 
                 {/* Body Tab */}
-                <TabsContent value="body" className="space-y-4">
-                  <div className="flex justify-between items-center mb-4">
-                    <div className="flex items-center space-x-2">
-                      <Select value={bodyFormat} onValueChange={(value) => handleBodyFormatChange(value as BodyFormat)}>
-                        <SelectTrigger className="w-40">
-                          <SelectValue placeholder="Body Format" />
-                        </SelectTrigger>
-                        <SelectContent>
-                          <SelectItem value="raw">Raw</SelectItem>
-                          <SelectItem value="json">JSON</SelectItem>
-                          <SelectItem value="form-data">Form Data</SelectItem>
-                          <SelectItem value="x-www-form-urlencoded">x-www-form-urlencoded</SelectItem>
-                        </SelectContent>
-                      </Select>
+                <TabsContent value="body" className="space-y-4 min-h-[300px]">
+                  <div className="flex flex-col space-y-4">
+                    <div className="flex flex-wrap justify-between items-center gap-2">
+                      <div className="flex items-center space-x-2">
+                        <Label htmlFor="body-format">Body Format:</Label>
+                        <Select
+                          value={bodyFormat}
+                          onValueChange={(value) => handleBodyFormatChange(value as BodyFormat)}
+                        >
+                          <SelectTrigger id="body-format" className="w-40">
+                            <SelectValue placeholder="Body Format" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="raw">Raw</SelectItem>
+                            <SelectItem value="json">JSON</SelectItem>
+                            <SelectItem value="form-data">Form Data</SelectItem>
+                            <SelectItem value="x-www-form-urlencoded">x-www-form-urlencoded</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
 
                       {bodyFormat === "json" && (
                         <Button variant="outline" size="sm" onClick={formatJson}>
@@ -602,15 +610,15 @@ export default function ApiTesterClientPage() {
                     </div>
 
                     {bodyFormat === "json" && (
-                      <div className="flex space-x-2">
+                      <div className="flex flex-wrap gap-2">
                         <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("empty")}>
-                          Empty
+                          Empty Object
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("post")}>
-                          Post
+                          Post Object
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("user")}>
-                          User
+                          User Object
                         </Button>
                         <Button variant="outline" size="sm" onClick={() => loadJsonTemplate("array")}>
                           Array
@@ -659,7 +667,7 @@ export default function ApiTesterClientPage() {
 
         {/* Response Section */}
         <div>
-          <Card>
+          <Card className="h-full">
             <CardHeader>
               <CardTitle className="flex justify-between items-center">
                 <span>Response</span>

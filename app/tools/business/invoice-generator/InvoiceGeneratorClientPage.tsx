@@ -12,6 +12,8 @@ import { Textarea } from "@/components/ui/textarea"
 import { Plus, Trash2, Download, FileText, Printer } from "lucide-react"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { format } from "date-fns"
+import { jsPDF } from "jspdf"
+import autoTable from "jspdf-autotable"
 
 interface InvoiceItem {
   id: string
@@ -170,10 +172,6 @@ export default function InvoiceGeneratorClientPage() {
 
   const generatePDF = async () => {
     try {
-      // Dynamically import jsPDF and jspdf-autotable to avoid SSR issues
-      const { jsPDF } = await import("jspdf")
-      const autoTable = (await import("jspdf-autotable")).default
-
       const doc = new jsPDF()
 
       // Add business details
@@ -272,7 +270,7 @@ export default function InvoiceGeneratorClientPage() {
       <head>
         <title>Invoice ${invoiceDetails.invoiceNumber}</title>
         <style>
-          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; }
+          body { font-family: Arial, sans-serif; margin: 0; padding: 20px; color: #000; background-color: #fff; }
           .invoice-container { max-width: 800px; margin: 0 auto; }
           .header { display: flex; justify-content: space-between; margin-bottom: 30px; }
           .business-details, .invoice-details { margin-bottom: 20px; }
@@ -413,7 +411,10 @@ export default function InvoiceGeneratorClientPage() {
         <p className="mt-2 text-muted-foreground">Create professional invoices for your clients</p>
       </div>
 
-      <AdBanner format="horizontal" slot="invoice-generator-top" />
+      <div className="text-center mb-6">
+        <AdBanner format="horizontal" slot="invoice-generator-top" />
+        <p className="text-xs text-muted-foreground mt-1">Advertisement</p>
+      </div>
 
       <div className="flex justify-center mt-6 mb-4">
         <div className="inline-flex rounded-md shadow-sm">
@@ -735,11 +736,11 @@ export default function InvoiceGeneratorClientPage() {
               </Button>
             </div>
 
-            <div ref={invoiceRef} className="border rounded-md p-8 bg-white">
+            <div ref={invoiceRef} className="border rounded-md p-8 bg-white text-black dark:bg-white">
               <div className="flex flex-col md:flex-row justify-between mb-8">
                 <div>
-                  <h1 className="text-2xl font-bold mb-2">INVOICE</h1>
-                  <div className="text-sm">
+                  <h1 className="text-2xl font-bold mb-2 text-black">INVOICE</h1>
+                  <div className="text-sm text-black">
                     <p className="font-semibold">{businessDetails.name}</p>
                     <p>{businessDetails.address}</p>
                     <p>Phone: {businessDetails.phone}</p>
@@ -748,7 +749,7 @@ export default function InvoiceGeneratorClientPage() {
                   </div>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm">
+                  <div className="text-sm text-black">
                     <p>
                       <span className="font-semibold">Invoice Number:</span> {invoiceDetails.invoiceNumber}
                     </p>
@@ -763,8 +764,8 @@ export default function InvoiceGeneratorClientPage() {
               </div>
 
               <div className="mb-8">
-                <h2 className="text-lg font-semibold mb-2">Bill To:</h2>
-                <div className="text-sm">
+                <h2 className="text-lg font-semibold mb-2 text-black">Bill To:</h2>
+                <div className="text-sm text-black">
                   <p className="font-semibold">{clientDetails.name}</p>
                   <p>{clientDetails.address}</p>
                   <p>Email: {clientDetails.email}</p>
@@ -775,46 +776,48 @@ export default function InvoiceGeneratorClientPage() {
               <div className="overflow-x-auto mb-8">
                 <table className="w-full">
                   <thead>
-                    <tr className="border-b border-t">
-                      <th className="text-left py-2 px-4 font-semibold">Description</th>
-                      <th className="text-left py-2 px-4 font-semibold">Quantity</th>
-                      <th className="text-left py-2 px-4 font-semibold">Rate</th>
-                      <th className="text-left py-2 px-4 font-semibold">Amount</th>
+                    <tr className="border-b border-t border-gray-300">
+                      <th className="text-left py-2 px-4 font-semibold text-black bg-gray-100">Description</th>
+                      <th className="text-left py-2 px-4 font-semibold text-black bg-gray-100">Quantity</th>
+                      <th className="text-left py-2 px-4 font-semibold text-black bg-gray-100">Rate</th>
+                      <th className="text-left py-2 px-4 font-semibold text-black bg-gray-100">Amount</th>
                     </tr>
                   </thead>
                   <tbody>
                     {items.map((item) => (
-                      <tr key={item.id} className="border-b">
-                        <td className="py-2 px-4">{item.description || "Item description"}</td>
-                        <td className="py-2 px-4">{item.quantity}</td>
-                        <td className="py-2 px-4">{formatCurrency(item.rate)}</td>
-                        <td className="py-2 px-4">{formatCurrency(item.amount)}</td>
+                      <tr key={item.id} className="border-b border-gray-300">
+                        <td className="py-2 px-4 text-black">{item.description || "Item description"}</td>
+                        <td className="py-2 px-4 text-black">{item.quantity}</td>
+                        <td className="py-2 px-4 text-black">{formatCurrency(item.rate)}</td>
+                        <td className="py-2 px-4 text-black">{formatCurrency(item.amount)}</td>
                       </tr>
                     ))}
                   </tbody>
                   <tfoot>
                     <tr>
                       <td colSpan={2}></td>
-                      <td className="py-2 px-4 text-right font-semibold">Subtotal:</td>
-                      <td className="py-2 px-4">{formatCurrency(calculateSubtotal())}</td>
+                      <td className="py-2 px-4 text-right font-semibold text-black">Subtotal:</td>
+                      <td className="py-2 px-4 text-black">{formatCurrency(calculateSubtotal())}</td>
                     </tr>
                     <tr>
                       <td colSpan={2}></td>
-                      <td className="py-2 px-4 text-right font-semibold">Tax ({invoiceDetails.taxRate}%):</td>
-                      <td className="py-2 px-4">{formatCurrency(calculateTax())}</td>
+                      <td className="py-2 px-4 text-right font-semibold text-black">
+                        Tax ({invoiceDetails.taxRate}%):
+                      </td>
+                      <td className="py-2 px-4 text-black">{formatCurrency(calculateTax())}</td>
                     </tr>
                     <tr>
                       <td colSpan={2}></td>
-                      <td className="py-2 px-4 text-right font-semibold">Total:</td>
-                      <td className="py-2 px-4 font-bold">{formatCurrency(calculateTotal())}</td>
+                      <td className="py-2 px-4 text-right font-semibold text-black">Total:</td>
+                      <td className="py-2 px-4 font-bold text-black">{formatCurrency(calculateTotal())}</td>
                     </tr>
                   </tfoot>
                 </table>
               </div>
 
               <div>
-                <h2 className="text-lg font-semibold mb-2">Notes:</h2>
-                <p className="text-sm">{invoiceDetails.notes}</p>
+                <h2 className="text-lg font-semibold mb-2 text-black">Notes:</h2>
+                <p className="text-sm text-black">{invoiceDetails.notes}</p>
               </div>
             </div>
           </CardContent>
@@ -834,7 +837,10 @@ export default function InvoiceGeneratorClientPage() {
         </Button>
       </div>
 
-      <AdBanner className="my-8" format="rectangle" slot="invoice-generator-middle" />
+      <div className="text-center my-8">
+        <AdBanner format="rectangle" slot="invoice-generator-middle" />
+        <p className="text-xs text-muted-foreground mt-1">Advertisement</p>
+      </div>
 
       <section className="my-8 py-6 border-t">
         <h2 className="text-2xl font-semibold mb-4">About Invoice Generator</h2>

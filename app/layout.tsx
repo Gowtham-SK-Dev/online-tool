@@ -20,7 +20,7 @@ export const metadata: Metadata = {
   description:
     "Free online developer tools for formatting, beautifying, and validating code. JSON formatter, HTML formatter, text diff checker, base64 encoder/decoder, and more.",
   keywords:
-    "developer tools, code formatter, JSON formatter, HTML formatter, text diff, base64 encoder, color converter, uuid generator, online tools",
+    "developer tools, code formatter, JSON formatter, HTML formatter, text diff, base64 encoder, color converter, uuid generator, online tools, web development tools, programming utilities",
   authors: [{ name: "DevTools Team", url: "https://devtools-online.vercel.app" }],
   creator: "DevTools Team",
   publisher: "DevTools",
@@ -51,8 +51,26 @@ export const metadata: Metadata = {
   robots: {
     index: true,
     follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-video-preview": -1,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+    },
+  },
+  alternates: {
+    canonical: "https://devtools-online.vercel.app",
   },
   metadataBase: new URL("https://devtools-online.vercel.app"),
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/icon-16x16.png", sizes: "16x16", type: "image/png" },
+      { url: "/icon-32x32.png", sizes: "32x32", type: "image/png" },
+    ],
+    apple: [{ url: "/apple-touch-icon.png", sizes: "180x180", type: "image/png" }],
+  },
     generator: 'v0.dev'
 }
 
@@ -64,7 +82,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <link rel="icon" href="/favicon.ico" sizes="any" />
         {/* Google AdSense Script - Replace with your actual AdSense code when approved */}
         <Script
           id="google-adsense"
