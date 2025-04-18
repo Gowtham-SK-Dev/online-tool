@@ -465,11 +465,6 @@ export default function ElectricityCalculatorClientPage() {
               />
             </div>
           </CardContent>
-          <CardFooter>
-            <Button onClick={() => calculateBill(selectedRegion, unitsConsumed)} className="w-full">
-              Calculate Bill
-            </Button>
-          </CardFooter>
         </Card>
 
         <Card>
