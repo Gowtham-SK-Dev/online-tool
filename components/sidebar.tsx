@@ -35,6 +35,7 @@ import {
   FileType,
   ContrastIcon as Transition,
   ImageIcon,
+  Zap,
 } from "lucide-react"
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {}
@@ -352,6 +353,16 @@ export default function Sidebar({ className }: SidebarProps) {
               <Link href="/tools/business/budget-planner">
                 <PieChart className="mr-2 h-4 w-4" />
                 Budget Planner
+              </Link>
+            </Button>
+            <Button
+              asChild
+              variant={pathname?.startsWith("/tools/business/electricity-calculator") ? "secondary" : "ghost"}
+              className="w-full justify-start"
+            >
+              <Link href="/tools/business/electricity-calculator">
+                <Zap className="mr-2 h-4 w-4" />
+                Electricity Bill Calculator
               </Link>
             </Button>
           </div>
