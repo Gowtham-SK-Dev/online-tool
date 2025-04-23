@@ -57,7 +57,7 @@ export default function CssGradientClientPage() {
       tailwind = `bg-[conic-gradient(from_${conicAngle}deg_at_${conicPosition.replace(" ", "_")},${sortedStops.map((stop) => `${stop.color.replace("#", "")}_${stop.position}%`).join(",")}))]`
     }
 
-    setCssCode(`background: ${gradient};`)
+    setCssCode(`background: ${gradient}`)
     setTailwindCode(tailwind)
   }
 

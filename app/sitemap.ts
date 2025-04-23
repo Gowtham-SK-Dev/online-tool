@@ -20,6 +20,7 @@ export default function sitemap(): MetadataRoute.Sitemap {
     { path: "/tools/design/favicon", priority: 0.7 },
     { path: "/tools/business/invoice", priority: 0.7 },
     { path: "/tools/business/gst", priority: 0.7 },
+    { path: "/tools/audit", priority: 0.8 },
   ]
 
   const pages = [

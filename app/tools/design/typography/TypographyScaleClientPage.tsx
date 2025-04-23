@@ -1,6 +1,6 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
@@ -61,17 +61,13 @@ export default function TypographyScaleClientPage() {
 
   // Update scale ratio when scale type changes
   useEffect(() => {
-    if (settings.scaleType !== "custom") {
+    if (settings.scaleType !== "custom" && scaleRatios[settings.scaleType] !== settings.scaleRatio) {
       setSettings((prevSettings) => ({ ...prevSettings, scaleRatio: scaleRatios[settings.scaleType] }))
     }
-  }, [settings, settings.scaleType])
+  }, [settings.scaleType, settings.scaleRatio])
 
   // Generate the typography scale
-  useEffect(() => {
-    generateScale()
-  }, [settings, fontSettings])
-
-  const generateScale = () => {
+  const generateScale = useCallback(() => {
     const { baseSize, baseLineHeight, scaleRatio, levels } = settings
 
     const newScale = []
@@ -88,7 +84,11 @@ export default function TypographyScaleClientPage() {
     }
 
     setScale(newScale)
-  }
+  }, [settings])
+
+  useEffect(() => {
+    generateScale()
+  }, [generateScale, settings, fontSettings])
 
   // Format size with the selected unit
   const formatSize = (size: number): string => {
@@ -243,7 +243,7 @@ module.exports = {
                 max={24}
                 step={1}
                 value={[settings.baseSize]}
-                onValueChange={(value) => setSettings({ ...settings, baseSize: value[0] })}
+                onValueChange={(value) => setSettings((prev) => ({ ...prev, baseSize: value[0] }))}
                 className="mt-2"
                 aria-label="Base font size"
               />
@@ -257,7 +257,7 @@ module.exports = {
                 max={2}
                 step={0.05}
                 value={[settings.baseLineHeight]}
-                onValueChange={(value) => setSettings({ ...settings, baseLineHeight: value[0] })}
+                onValueChange={(value) => setSettings((prev) => ({ ...prev, baseLineHeight: value[0] }))}
                 className="mt-2"
                 aria-label="Base line height"
               />
@@ -267,7 +267,7 @@ module.exports = {
               <Label htmlFor="scale-type">Scale Type</Label>
               <Select
                 value={settings.scaleType}
-                onValueChange={(value) => setSettings({ ...settings, scaleType: value as ScaleType })}
+                onValueChange={(value) => setSettings((prev) => ({ ...prev, scaleType: value as ScaleType }))}
               >
                 <SelectTrigger id="scale-type" className="mt-2">
                   <SelectValue placeholder="Select scale type" />
@@ -291,7 +291,7 @@ module.exports = {
                   max={2}
                   step={0.01}
                   value={[settings.scaleRatio]}
-                  onValueChange={(value) => setSettings({ ...settings, scaleRatio: value[0] })}
+                  onValueChange={(value) => setSettings((prev) => ({ ...prev, scaleRatio: value[0] }))}
                   className="mt-2"
                   aria-label="Scale ratio"
                 />
@@ -306,7 +306,7 @@ module.exports = {
                 max={9}
                 step={1}
                 value={[settings.levels]}
-                onValueChange={(value) => setSettings({ ...settings, levels: value[0] })}
+                onValueChange={(value) => setSettings((prev) => ({ ...prev, levels: value[0] }))}
                 className="mt-2"
                 aria-label="Number of levels"
               />
@@ -316,7 +316,7 @@ module.exports = {
               <Label htmlFor="unit">Unit</Label>
               <Select
                 value={settings.unit}
-                onValueChange={(value) => setSettings({ ...settings, unit: value as "px" | "rem" | "em" })}
+                onValueChange={(value) => setSettings((prev) => ({ ...prev, unit: value as "px" | "rem" | "em" }))}
               >
                 <SelectTrigger id="unit" className="mt-2">
                   <SelectValue placeholder="Select unit" />
@@ -338,7 +338,7 @@ module.exports = {
                   <Input
                     id="font-family"
                     value={fontSettings.family}
-                    onChange={(e) => setFontSettings({ ...fontSettings, family: e.target.value })}
+                    onChange={(e) => setFontSettings((prev) => ({ ...prev, family: e.target.value }))}
                     className="mt-2"
                   />
                 </div>
@@ -347,7 +347,7 @@ module.exports = {
                   <Label htmlFor="font-weight">Font Weight: {fontSettings.weight}</Label>
                   <Select
                     value={fontSettings.weight.toString()}
-                    onValueChange={(value) => setFontSettings({ ...fontSettings, weight: Number.parseInt(value) })}
+                    onValueChange={(value) => setFontSettings((prev) => ({ ...prev, weight: Number.parseInt(value) }))}
                   >
                     <SelectTrigger id="font-weight" className="mt-2">
                       <SelectValue placeholder="Select font weight" />
@@ -371,7 +371,7 @@ module.exports = {
                     max={5}
                     step={0.1}
                     value={[fontSettings.letterSpacing]}
-                    onValueChange={(value) => setFontSettings({ ...fontSettings, letterSpacing: value[0] })}
+                    onValueChange={(value) => setFontSettings((prev) => ({ ...prev, letterSpacing: value[0] }))}
                     className="mt-2"
                     aria-label="Letter spacing"
                   />
