@@ -59,10 +59,10 @@ export default function ContactPage() {
       <div className="max-w-2xl mx-auto">
         <h1 className="text-3xl font-bold mb-6">Contact Us</h1>
 
-        <p className="text-muted-foreground mb-8">
+        {/* <p className="text-muted-foreground mb-8">
           Have a question, suggestion, or just want to say hello? We'd love to hear from you! Fill out the form below
           and we'll get back to you as soon as possible.
-        </p>
+        </p> */}
 
         {/* <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
@@ -131,7 +131,7 @@ export default function ContactPage() {
         </Form> */}
 
         <div className="mt-12 pt-8 border-t">
-          <h2 className="text-xl font-semibold mb-4">Other Ways to Reach Us</h2>
+          {/* <h2 className="text-xl font-semibold mb-4">Other Ways to Reach Us</h2> */}
 
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
