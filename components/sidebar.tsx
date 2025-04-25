@@ -26,7 +26,7 @@ export default function Sidebar() {
           <div key={sectionIndex} className="space-y-2">
             <button
               onClick={() => toggleSection(section.title)}
-              className="flex items-center justify-between w-full text-sm font-medium text-muted-foreground px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
+              className="flex items-center justify-between w-full text-sm font-medium px-2 py-1 rounded-md hover:bg-accent hover:text-accent-foreground"
             >
               <span>{section.title}</span>
               {openSections.includes(section.title) ? (
