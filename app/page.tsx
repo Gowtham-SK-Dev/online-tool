@@ -29,10 +29,6 @@ export const metadata: Metadata = {
     "Free online developer tools for formatting, beautifying, and validating code. JSON formatter, HTML formatter, text diff checker, base64 encoder/decoder, and more.",
   keywords:
     "developer tools, code formatter, JSON formatter, HTML formatter, text diff, base64 encoder, color converter, uuid generator, online tools",
-    icons: {
-      icon: '/settings.svg',
-      shortcut: '/favicon.ico',
-}
 
 export default function Home() {
   const tools = [
