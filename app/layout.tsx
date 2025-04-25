@@ -21,13 +21,13 @@ export const metadata: Metadata = {
     "Free online developer tools for formatting, beautifying, and validating code. JSON formatter, HTML formatter, text diff checker, base64 encoder/decoder, and more.",
   keywords:
     "developer tools, code formatter, JSON formatter, HTML formatter, text diff, base64 encoder, color converter, uuid generator, online tools, web development tools, programming utilities",
-  authors: [{ name: "DevTools Team", url: "https://devtools-online.vercel.app" }],
+  authors: [{ name: "DevTools Team", url: "https://online-tool-demo.netlify.app" }],
   creator: "DevTools Team",
   publisher: "DevTools",
   openGraph: {
     title: "DevTools - Online Developer Utilities",
     description: "Free online developer tools for formatting, beautifying, and validating code.",
-    url: "https://devtools-online.vercel.app",
+    url: "https://online-tool-demo.netlify.app",
     siteName: "DevTools",
     images: [
       {
@@ -60,9 +60,9 @@ export const metadata: Metadata = {
     },
   },
   alternates: {
-    canonical: "https://devtools-online.vercel.app",
+    canonical: "https://online-tool-demo.netlify.app",
   },
-  metadataBase: new URL("https://devtools-online.vercel.app"),
+  metadataBase: new URL("https://online-tool-demo.netlify.app"),
   icons: {
     icon: [
       { url: "/favicon.ico", sizes: "any" },
@@ -116,11 +116,11 @@ export default function RootLayout({
               "@context": "https://schema.org",
               "@type": "WebSite",
               name: "DevTools - Online Developer Utilities",
-              url: "https://devtools-online.vercel.app",
+              url: "https://online-tool-demo.netlify.app",
               description: "Free online developer tools for formatting, beautifying, and validating code.",
               potentialAction: {
                 "@type": "SearchAction",
-                target: "https://devtools-online.vercel.app/search?q={search_term_string}",
+                target: "https://online-tool-demo.netlify.app/search?q={search_term_string}",
                 "query-input": "required name=search_term_string",
               },
             }),

@@ -7,6 +7,6 @@ export default function robots(): MetadataRoute.Robots {
       allow: "/",
       disallow: ["/api/"],
     },
-    sitemap: "https://devtools-online.vercel.app/sitemap.xml",
+    sitemap: "https://online-tool-demo.netlify.app/sitemap.xml",
   }
 }

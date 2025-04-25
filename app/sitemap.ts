@@ -1,7 +1,7 @@
 import type { MetadataRoute } from "next"
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = "https://devtools-online.vercel.app"
+  const baseUrl = process.env.BASE_URL || "https://online-tool-demo.netlify.app";
 
   const tools = [
     { path: "/tools/formatters/json", priority: 0.8 },
