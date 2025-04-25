@@ -124,9 +124,9 @@ export default function ContactPage() {
               )}
             />
 
-            <Button type="submit" className="w-full" disabled={isSubmitting}>
+            {/* <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Sending..." : "Send Message"}
-            </Button>
+            </Button> */}
           </form>
         </Form>
 
@@ -147,15 +147,15 @@ export default function ContactPage() {
             <div>
               <h3 className="font-medium mb-2">Social Media</h3>
               <p className="text-muted-foreground">
-                <a href="#" className="hover:underline">
+                {/* <a href="#" className="hover:underline">
                   Twitter
                 </a>{" "}
                 •
                 <a href="#" className="hover:underline ml-2">
                   GitHub
                 </a>{" "}
-                •
-                <a href="#" className="hover:underline ml-2">
+                • */}
+                <a href="https://www.linkedin.com/in/gowtham-sk-4843811a5/" className="hover:underline ml-2">
                   LinkedIn
                 </a>
               </p>
