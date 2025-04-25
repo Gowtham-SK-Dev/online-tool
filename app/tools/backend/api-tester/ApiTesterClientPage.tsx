@@ -52,7 +52,6 @@ export default function ApiTesterClientPage() {
   const abortControllerRef = useRef<AbortController | null>(null)
   const { toast } = useToast()
 
-  // Header management
   const addHeader = () => {
     setHeaders([...headers, { id: Date.now().toString(), key: "", value: "", enabled: true }])
   }
@@ -65,7 +64,6 @@ export default function ApiTesterClientPage() {
     setHeaders(headers.filter((header) => header.id !== id))
   }
 
-  // Parameter management
   const addParam = () => {
     setParams([...params, { id: Date.now().toString(), key: "", value: "", enabled: true }])
   }
@@ -197,15 +195,12 @@ export default function ApiTesterClientPage() {
     }
   }
 
-  // Build URL with query parameters
   const buildUrl = () => {
     try {
       const urlObj = new URL(url)
 
-      // Clear existing query parameters
       urlObj.search = ""
 
-      // Add query parameters
       params.forEach((param) => {
         if (param.enabled && param.key.trim()) {
           urlObj.searchParams.append(param.key.trim(), param.value)
@@ -214,7 +209,6 @@ export default function ApiTesterClientPage() {
 
       return urlObj.toString()
     } catch (error) {
-      // If URL is invalid, just return it as is
       return url
     }
   }
@@ -230,7 +224,6 @@ export default function ApiTesterClientPage() {
       return
     }
 
-    // Validate JSON if that's the selected mode
     if (bodyFormat === "json" && body.trim() && !validateJsonBody()) {
       toast({
         title: "Invalid JSON",
@@ -243,7 +236,6 @@ export default function ApiTesterClientPage() {
     setIsLoading(true)
     setResponse(null)
 
-    // Create a new AbortController for this request
     abortControllerRef.current = new AbortController()
     const signal = abortControllerRef.current.signal
 
@@ -266,7 +258,6 @@ export default function ApiTesterClientPage() {
         signal,
       }
 
-      // Add body for methods that support it
       if (["POST", "PUT", "PATCH"].includes(method) && body.trim()) {
         options.body = body
       }
@@ -275,13 +266,11 @@ export default function ApiTesterClientPage() {
       const endTime = performance.now()
       const responseTime = endTime - startTime
 
-      // Get response headers
       const responseHeaders: Record<string, string> = {}
       response.headers.forEach((value, key) => {
         responseHeaders[key] = value
       })
 
-      // Try to parse response
       let responseBody = ""
       let responseSize = 0
 
@@ -292,11 +281,9 @@ export default function ApiTesterClientPage() {
         if (blob.type.includes("application/json")) {
           const text = await blob.text()
           try {
-            // Try to parse and format JSON
             const json = JSON.parse(text)
             responseBody = JSON.stringify(json, null, 2)
           } catch {
-            // If parsing fails, just use the text
             responseBody = text
           }
         } else if (blob.type.includes("text/")) {
@@ -335,7 +322,6 @@ export default function ApiTesterClientPage() {
     }
   }
 
-  // Cancel request
   const cancelRequest = () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort()
@@ -344,7 +330,6 @@ export default function ApiTesterClientPage() {
     }
   }
 
-  // Copy response
   const copyResponse = () => {
     if (!response) return
 
@@ -358,7 +343,6 @@ export default function ApiTesterClientPage() {
     })
   }
 
-  // Download response
   const downloadResponse = () => {
     if (!response) return
 
@@ -379,7 +363,6 @@ export default function ApiTesterClientPage() {
     })
   }
 
-  // Format bytes
   const formatBytes = (bytes: number): string => {
     if (bytes === 0) return "0 Bytes"
 
@@ -390,7 +373,6 @@ export default function ApiTesterClientPage() {
     return Number.parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + " " + sizes[i]
   }
 
-  // Get status color
   const getStatusColor = (status: number): string => {
     if (status >= 200 && status < 300) return "text-green-600 dark:text-green-400"
     if (status >= 300 && status < 400) return "text-blue-600 dark:text-blue-400"

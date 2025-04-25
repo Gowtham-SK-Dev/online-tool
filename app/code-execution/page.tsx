@@ -50,16 +50,13 @@ export default function CodeExecutionPage() {
             )
           }
 
-          // Execute the code in a try-catch block
           try {
-            // Use Function constructor to create a function from the code
             const fn = new Function(code)
             fn()
           } catch (error) {
             console.error(error)
           }
 
-          // Restore original console methods
           console.log = originalConsoleLog
           console.error = originalConsoleError
 

@@ -24,11 +24,14 @@ import type { Metadata } from "next"
 import FAQSection from "@/components/faq-section"
 
 export const metadata: Metadata = {
-  title: "DevTools - Free Online Developer Utilities",
+  title: "OnlineTools - Free Online Developer Utilities",
   description:
     "Free online developer tools for formatting, beautifying, and validating code. JSON formatter, HTML formatter, text diff checker, base64 encoder/decoder, and more.",
   keywords:
     "developer tools, code formatter, JSON formatter, HTML formatter, text diff, base64 encoder, color converter, uuid generator, online tools",
+    icons: {
+      icon: '/settings.svg',
+      shortcut: '/favicon.ico',
 }
 
 export default function Home() {
