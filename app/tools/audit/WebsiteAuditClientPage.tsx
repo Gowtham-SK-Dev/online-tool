@@ -560,7 +560,7 @@ export default function WebsiteAuditClientPage() {
 
   return (
     <div className="container mx-auto py-6 space-y-8">
-      <div>
+      <div className="flex flex-col items-center justify-center py-6 text-center">
         <h1 className="text-3xl font-bold mb-2">Website Audit Tool</h1>
         <p className="text-muted-foreground">
           Comprehensive website analysis for SEO, performance, mobile responsiveness, and AdSense compliance

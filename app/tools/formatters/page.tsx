@@ -33,7 +33,7 @@ export default function FormattersPage() {
 
   return (
     <div className="container py-8 max-w-6xl">
-      <div flex flex-col items-center justify-center py-6 text-center>
+      <div className="flex flex-col items-center justify-center py-6 text-center">
       <h1 className="text-3xl font-bold mb-2">Code Formatters</h1>
       <p className="text-muted-foreground mb-8">
         Format your code with our collection of code formatting tools. Make your code readable and maintainable.
