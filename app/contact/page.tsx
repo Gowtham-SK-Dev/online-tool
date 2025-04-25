@@ -64,7 +64,7 @@ export default function ContactPage() {
           and we'll get back to you as soon as possible.
         </p>
 
-        <Form {...form}>
+        {/* <Form {...form}>
           <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <FormField
@@ -124,11 +124,11 @@ export default function ContactPage() {
               )}
             />
 
-            {/* <Button type="submit" className="w-full" disabled={isSubmitting}>
+            <Button type="submit" className="w-full" disabled={isSubmitting}>
               {isSubmitting ? "Sending..." : "Send Message"}
-            </Button> */}
+            </Button>
           </form>
-        </Form>
+        </Form> */}
 
         <div className="mt-12 pt-8 border-t">
           <h2 className="text-xl font-semibold mb-4">Other Ways to Reach Us</h2>
