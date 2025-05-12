@@ -52,7 +52,6 @@ export default function HtmlFormatterPage() {
           continue
         }
 
-        // Handle tags
         if (char === "<" && !inTag) {
           inTag = true
           inContent = false
@@ -66,13 +65,11 @@ export default function HtmlFormatterPage() {
           if (char === ">") {
             inTag = false
 
-            // Check if it's a closing tag or self-closing tag
             if (tagContent.startsWith("</") || tagContent.endsWith("/>")) {
               indent = Math.max(0, indent - 2)
               formatted += "\n" + " ".repeat(indent) + tagContent
             } else {
               formatted += "\n" + " ".repeat(indent) + tagContent
-              // Don't increase indent for void elements like <br>, <img>, etc.
               const voidElements = [
                 "area",
                 "base",
@@ -101,7 +98,6 @@ export default function HtmlFormatterPage() {
           continue
         }
 
-        // Handle content between tags
         if (inContent) {
           if (char === "\n" || char === "\r" || char === "\t" || (char === " " && formatted.endsWith(" "))) {
             continue
