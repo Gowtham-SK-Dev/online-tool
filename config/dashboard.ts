@@ -178,11 +178,11 @@ export const dashboardConfig = {
           href: "/tools/business/break-even",
           icon: TrendingUp,
         },
-        {
-          title: "Budget Planner",
-          href: "/tools/business/budget-planner",
-          icon: PieChart,
-        },
+        // {
+        //   title: "Budget Planner",
+        //   href: "/tools/business/budget-planner",
+        //   icon: PieChart,
+        // },
       ],
     },
     {

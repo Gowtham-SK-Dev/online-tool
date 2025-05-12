@@ -94,7 +94,7 @@ export default function Header() {
         { name: "GST Calculator", href: "/tools/business/gst-calculator" },
         { name: "Profit Margin Calculator", href: "/tools/business/profit-margin" },
         { name: "Break-even Calculator", href: "/tools/business/break-even" },
-        { name: "Budget Planner", href: "/tools/business/budget-planner" },
+        // { name: "Budget Planner", href: "/tools/business/budget-planner" },
       ],
     },
     {
