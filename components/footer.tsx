@@ -92,7 +92,7 @@ export default function Footer() {
         </div>
 
         <div className="mt-8 pt-6 border-t flex flex-col md:flex-row justify-between items-center">
-          <p className="text-sm text-muted-foreground">&copy; {currentYear} DevTools. All rights reserved.</p>
+          <p className="text-sm text-muted-foreground">&copy; {currentYear} Infosense Technologies. All rights reserved.</p>
           <div className="mt-4 md:mt-0">
             <p className="text-sm text-muted-foreground">Built with ❤️ for developers worldwide</p>
           </div>

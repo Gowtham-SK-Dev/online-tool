@@ -136,7 +136,7 @@ export default function ContactPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             <div>
               <h3 className="font-medium mb-2">Email</h3>
-              <p className="text-muted-foreground">sk.infosense.3@gmail.com</p>
+              <p className="text-muted-foreground">onlinetools@infosensetechnologies.com</p>
             </div>
 
             <div>
