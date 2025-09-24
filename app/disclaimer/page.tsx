@@ -128,7 +128,7 @@ export default function DisclaimerPage() {
 
         <h2>Contact Us</h2>
         <p>If you have any questions about this Disclaimer, please contact us at:</p>
-        <p>Email: sk.infosense.3@gmail.com</p>
+        <p>Email: onlinetools@infosensetechnologies.com</p>
       </div>
     </div>
   )
